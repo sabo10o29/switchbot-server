@@ -1,3 +1,5 @@
 {
-    "path": "./"
+    "scriptPath": "../../python-host/",
+    "scriptFileName": "switchbot_py3.py",
+    "pressInterval": 30000
 }

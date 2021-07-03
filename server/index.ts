@@ -73,45 +73,28 @@ app.post('/press', function (req, res) {
     
 });
 
-async function restartTask(address: string){
-    const options = {
-        scriptPath: config.path,
-        pythonOptions: ['-u'], // get print results in real-time
-        args: [address, 'Press']
-    };
-      
-    PythonShell.run('switchbot_py3.py', options, function (err, results) {
-        if (err){
-            console.error("Failed to invoke python script.")
-        }
-        // results is an array consisting of messages collected during execution
-        console.log('results: %j', results);
-    });
-
-    await new Promise(r => setTimeout(r, 10000))
-
-    PythonShell.run('switchbot_py3.py', options, function (err, results) {
-        if (err){
-            console.error("Failed to invoke python script.")
-        }
-        // results is an array consisting of messages collected during execution
-        console.log('results: %j', results);
-    });
-
-}
-
 async function pressTask(address: string){
     const options = {
-        scriptPath: config.path,
-        pythonOptions: ['-u'], // get print results in real-time
-        args: [address, 'Press']
+        scriptPath: config.scriptPath,
+        pythonOptions: ['-u'],
+        args: ['-d', address, '-c', 'press']
     };
       
-    PythonShell.run('switchbot_py3.py', options, function (err, results) {
+    PythonShell.run(config.scriptFileName, options, function (err, results) {
         if (err){
             console.error("Failed to invoke python script.")
+            console.error(err)
         }
-        // results is an array consisting of messages collected during execution
         console.log('results: %j', results);
     });
+}
+
+async function restartTask(address: string){
+      
+    pressTask(address)
+
+    await new Promise(r => setTimeout(r, config.pressInterval))
+
+    pressTask(address)
+
 }
