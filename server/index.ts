@@ -2,6 +2,9 @@ import express from 'express'
 import Datastore from 'nedb'
 import { PythonShell } from 'python-shell';
 import { stringify } from 'qs';
+import fs from 'fs';
+
+const config = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
 
 const app: express.Express = express()
 app.use(express.json())
@@ -70,14 +73,45 @@ app.post('/press', function (req, res) {
     
 });
 
-function restartTask(address: string){
+async function restartTask(address: string){
+    const options = {
+        scriptPath: config.path,
+        pythonOptions: ['-u'], // get print results in real-time
+        args: [address, 'Press']
+    };
+      
+    PythonShell.run('switchbot_py3.py', options, function (err, results) {
+        if (err){
+            console.error("Failed to invoke python script.")
+        }
+        // results is an array consisting of messages collected during execution
+        console.log('results: %j', results);
+    });
+
+    await new Promise(r => setTimeout(r, 10000))
+
+    PythonShell.run('switchbot_py3.py', options, function (err, results) {
+        if (err){
+            console.error("Failed to invoke python script.")
+        }
+        // results is an array consisting of messages collected during execution
+        console.log('results: %j', results);
+    });
 
 }
 
-function pressTask(address: string){
-    PythonShell.runString('x=1+1;print(x)', undefined, function (err,data) {
-        if (err) throw err;
-        console.log(data)
-        console.log('finished');
-      });
+async function pressTask(address: string){
+    const options = {
+        scriptPath: config.path,
+        pythonOptions: ['-u'], // get print results in real-time
+        args: [address, 'Press']
+    };
+      
+    PythonShell.run('switchbot_py3.py', options, function (err, results) {
+        if (err){
+            console.error("Failed to invoke python script.")
+        }
+        // results is an array consisting of messages collected during execution
+        console.log('results: %j', results);
+    });
 }
